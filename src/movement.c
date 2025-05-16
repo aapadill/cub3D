@@ -345,6 +345,7 @@ void	loop_hook(void *param)
 		try_load_hands(data);
 	handle_movement(data);
 	handle_shake(data);
+	handle_new_gun(data);
 	handle_shooting(data);
 	handle_mouse_rotation(data);
 	handle_rotation(data);

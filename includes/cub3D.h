@@ -183,7 +183,8 @@ typedef struct s_data {
 	char			*error_msg;
 	bool 			calling_new_gun;
 	bool			is_gun_ready;
-	double			window_time;
+	
+    double			window_time;
 	double			time_one;
 	double			time_two;
 }	t_data;
