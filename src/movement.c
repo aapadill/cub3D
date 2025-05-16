@@ -11,6 +11,59 @@
 /* ************************************************************************** */
 
 #include "cub3D.h"
+#include <limits.h>
+
+//try to load *all* frames into the aux array.
+//if a frame isn’t yet on disk, we wait a bit and try again next frame
+static void try_load_hands(t_data *data)
+{
+    char path[PATH_MAX];
+    bool all_loaded = true;
+
+    for (int i = 0; i < data->hud_frame_count; ++i)
+    {
+        if (data->ai_hands[i] == NULL)  //not loaded yet
+        {
+            snprintf(path, sizeof(path), "textures/hand/handx%d.png", i + 1);
+
+            if (access(path, F_OK) == 0)
+            {
+                data->ai_hands[i] = mlx_load_png(path);
+                if (data->ai_hands[i])
+                    printf("Loaded %s\n", path);
+                else
+                    fprintf(stderr, "Failed to load %s\n", path);
+            }
+            else
+            {
+                all_loaded = false;
+				data->calling_new_gun = true;
+     			data->is_gun_ready    = false;
+            }
+        }
+    }
+    if (all_loaded)
+    {
+        //swap in the new textures
+        for (int i = 0; i < data->hud_frame_count; ++i)
+        {
+            //promote new
+			if (data->ai_hands[i])
+			{
+				//using an auxiliar pointer to delete the old texture
+				mlx_texture_t *old = data->hud_hands[i];
+				snprintf(path, sizeof(path), "textures/hand/handx%d.png", i + 1);
+				data->hud_hands[i] = mlx_load_png(path);
+				mlx_delete_texture(data->ai_hands[i]);
+				data->ai_hands[i] = NULL;
+				mlx_delete_texture(old);
+			}
+        }
+        data->calling_new_gun = false;
+        data->is_gun_ready    = true;
+        printf("New gun is ready!\n");
+    }
+}
 
 static int can_move_to(t_data *data, double new_x, double new_y)
 {
@@ -121,14 +174,24 @@ static void handle_shake(t_data *data)
 	}
 }
 
-static void	handle_new_gun(t_data *data)
+static void handle_new_gun(t_data *data)
 {
-	if (mlx_is_key_down(data->mlx, MLX_KEY_2))
-	{
-		printf("New gun coming...\n");
-		data->calling_new_gun = true;
-		data->is_gun_ready = false;
-	}
+    static double last_new_gun_time = 0.0;
+    static bool   prev_key2 = false;
+
+    bool key2 = mlx_is_key_down(data->mlx, MLX_KEY_2);
+    double now = mlx_get_time();
+
+    //on key-down edge and cooldown passed:
+    if (key2 && !prev_key2 && now - last_new_gun_time > 1.5)
+    {
+        last_new_gun_time    = now;
+        data->calling_new_gun = true;
+        data->is_gun_ready    = false;
+        printf("New gun requested at %.2f!\n", now);
+    }
+
+    prev_key2 = key2;
 }
 
 static void	handle_shooting(t_data *data)
@@ -254,10 +317,11 @@ void	loop_hook(void *param)
 {
 	t_data	*data;
 	data = (t_data *)param;
-
+	handle_new_gun(data);
+	if (data->calling_new_gun && !data->is_gun_ready)
+		try_load_hands(data);
 	handle_movement(data);
 	handle_shake(data);
-	handle_new_gun(data);
 	handle_shooting(data);
 	handle_mouse_rotation(data);
 	handle_rotation(data);

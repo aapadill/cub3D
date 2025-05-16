@@ -39,6 +39,7 @@ bool	initializer(t_data *data, char *filename, bool strict)
 	data->strict = strict;
 	data->player.speed = 0.025;
 	data->mlx = mlx_init(MIN_WIDTH, MIN_HEIGHT, "Cub3D Ray-Casting", true);
+	data->window_time = mlx_get_time();
 	if (!data->mlx)
 	{
 		data->error_msg = "Failed to initialize MLX";
@@ -100,6 +101,8 @@ bool	initializer(t_data *data, char *filename, bool strict)
 
 	/* hands */
 	data->hud_hands = gc_alloc(sizeof(mlx_texture_t *) * 5);
+	data->ai_hands = gc_alloc(sizeof(mlx_texture_t *) * 5);
+	ft_memset(data->hud_hands, 0, sizeof(mlx_texture_t *) * 5);
 	data->hud_hands[0] = mlx_load_png("textures/hand/hand111.png");
 	data->hud_hands[1] = mlx_load_png("textures/hand/hand222.png");
 	data->hud_hands[2] = mlx_load_png("textures/hand/hand333.png");

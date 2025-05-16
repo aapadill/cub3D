@@ -167,6 +167,7 @@ typedef struct s_data {
 	mlx_texture_t	**sprite_textures;
 
 	mlx_texture_t **hud_hands;
+	mlx_texture_t **ai_hands;
 	int hud_frame;
 	int hud_frame_count;
 	int hud_frame_timer;
@@ -178,6 +179,9 @@ typedef struct s_data {
 	char			*error_msg;
 	bool 			calling_new_gun;
 	bool			is_gun_ready;
+	double			window_time;
+	double			time_one;
+	double			time_two;
 }	t_data;
 
 /* 
