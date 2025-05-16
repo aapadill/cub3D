@@ -121,6 +121,16 @@ static void handle_shake(t_data *data)
 	}
 }
 
+static void	handle_new_gun(t_data *data)
+{
+	if (mlx_is_key_down(data->mlx, MLX_KEY_2))
+	{
+		printf("New gun coming...\n");
+		data->calling_new_gun = true;
+		data->is_gun_ready = false;
+	}
+}
+
 static void	handle_shooting(t_data *data)
 {
 	if (mlx_is_key_down(data->mlx, MLX_KEY_SPACE))
@@ -247,6 +257,7 @@ void	loop_hook(void *param)
 
 	handle_movement(data);
 	handle_shake(data);
+	handle_new_gun(data);
 	handle_shooting(data);
 	handle_mouse_rotation(data);
 	handle_rotation(data);

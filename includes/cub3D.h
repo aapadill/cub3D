@@ -176,6 +176,8 @@ typedef struct s_data {
 
 	bool			strict;
 	char			*error_msg;
+	bool 			calling_new_gun;
+	bool			is_gun_ready;
 }	t_data;
 
 /* 
