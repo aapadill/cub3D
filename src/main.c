@@ -55,9 +55,11 @@ bool	initializer(t_data *data, char *filename, bool strict)
 	}
 	ft_memset(data->textures, 0, sizeof(t_textures));
 	//data->textures->door = mlx_load_png("textures/pics/eagle.png"); //check error
+	
 	data->num_sprites = 3;
 	data->sprites = gc_alloc(sizeof(t_sprite) * data->num_sprites);
 	data->sprites[0].texture = 0;
+
 	status = parse_cubfile(filename, data);
 	if (status)
 	{
