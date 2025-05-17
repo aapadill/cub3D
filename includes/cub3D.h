@@ -256,6 +256,7 @@ void	shooting_animation(t_data *data);
 void call_chatgpt(char *prompt, t_data *data);
 // void call_dalle(char *image_prompt, t_data *data);
 //void	call_dalle_with_base64(const char *prompt, const char *base64_image);
-void	call_dalle_with_reference(const char *prompt_text, const char *image_path);
+// void	call_dalle_with_reference(const char *prompt_text, const char *image_path);
+int generate_with_gpt_image(const char *prompt, const char *save_path);
 
 #endif

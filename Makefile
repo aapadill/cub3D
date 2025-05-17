@@ -6,7 +6,7 @@ CC = cc
 
 
 
-CFLAGS = -Wall  -Wextra -g -O2 \
+CFLAGS = -Wall  -Wextra -g -O2 -fsanitize=address \
 	-I/opt/homebrew/include \
 	-I/opt/homebrew/opt/curl/include \
 	-I./includes \
