@@ -14,9 +14,8 @@ CFLAGS = -Wall  -Wextra -g -O2 \
 
 
 LDFLAGS = \
-	-lglfw -pthread -lm -lcurl -lcjson \
 	-L/opt/homebrew/lib \
-	-L/opt/homebrew/opt/curl/lib \
+	-lglfw -pthread -lm -lcurl -lcjson \
 	-L"./MLX42/include/MLX42" \
 	-L"./includes" \
 	-L"/opt/homebrew/Cellar/glfw/3.4/lib/"

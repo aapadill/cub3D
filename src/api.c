@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "cub3D.h" // 這裡包含 t_data 定義
 #include <cjson/cJSON.h>
-#define IMAGE_SAVE_PATH "./gun.png"
+#define IMAGE_SAVE_PATH "./textures/hand/gun.png"
 
 #define API_KEY ""
 struct memory {
@@ -40,6 +40,122 @@ int download_image(const char *url, const char *filename)
 	return res != CURLE_OK;
 }
 
+void call_dalle_with_reference(const char *prompt_text, const char *image_path)
+{
+	CURL *curl = curl_easy_init();
+	if (!curl) return;
+
+	struct curl_slist *headers = NULL;
+	char auth[512];
+	snprintf(auth, sizeof(auth), "Authorization: Bearer %s", API_KEY);
+	headers = curl_slist_append(headers, auth);
+
+	curl_mime *form = curl_mime_init(curl);
+	curl_mimepart *part;
+
+	// image
+	part = curl_mime_addpart(form);
+	curl_mime_name(part, "image");
+	curl_mime_filedata(part, image_path);
+
+	// prompt
+	part = curl_mime_addpart(form);
+	curl_mime_name(part, "prompt");
+	curl_mime_data(part, prompt_text, CURL_ZERO_TERMINATED);
+
+	// size
+	part = curl_mime_addpart(form);
+	curl_mime_name(part, "size");
+	curl_mime_data(part, "256x256", CURL_ZERO_TERMINATED);
+
+	// n (how many images)
+	part = curl_mime_addpart(form);
+	curl_mime_name(part, "n");
+	curl_mime_data(part, "1", CURL_ZERO_TERMINATED);
+
+	char response[8192] = {0};
+	curl_easy_setopt(curl, CURLOPT_URL, "https://api.openai.com/v1/images/edits");
+	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+	curl_easy_setopt(curl, CURLOPT_MIMEPOST, form);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
+
+	CURLcode res = curl_easy_perform(curl);
+	if (res != CURLE_OK)
+	{
+		fprintf(stderr, "❌ CURL error: %s\n", curl_easy_strerror(res));
+		goto cleanup;
+	}
+
+	printf("🧪 Raw response: %s\n", response);
+
+	// parse & save image
+	cJSON *json = cJSON_Parse(response);
+	if (!json) goto cleanup;
+	cJSON *data = cJSON_GetObjectItem(json, "data");
+	cJSON *first = cJSON_GetArrayItem(data, 0);
+	cJSON *url = cJSON_GetObjectItem(first, "url");
+	if (url && url->valuestring)
+	{
+		printf("🎨 DALL·E generated image URL: %s\n", url->valuestring);
+		download_image(url->valuestring, "./textures/hand/gun.png");
+	}
+	cJSON_Delete(json);
+
+cleanup:
+	curl_slist_free_all(headers);
+	curl_mime_free(form);
+	curl_easy_cleanup(curl);
+}
+
+
+/*
+void call_dalle_with_base64(const char *prompt, const char *base64_image) {
+    // Combine prefix with base64
+    char *image_data = malloc(strlen(base64_image) + 32);
+    if (!image_data) return;
+
+    sprintf(image_data, "data:image/png;base64,%s", base64_image);
+
+    // Compose JSON
+    const char *json_template = "{ \"prompt\": \"%s\", \"image\": \"%s\" }";
+    size_t json_size = strlen(prompt) + strlen(image_data) + strlen(json_template) + 1;
+    char *json = malloc(json_size);
+    if (!json) {
+        free(image_data);
+        return;
+    }
+    snprintf(json, json_size, json_template, prompt, image_data);
+
+    // Send POST with curl
+    CURL *curl = curl_easy_init();
+    if (curl) {
+        struct curl_slist *headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+
+        // Add your OpenAI key securely
+        char auth_header[512];
+        snprintf(auth_header, sizeof(auth_header), "Authorization: Bearer %s", API_KEY);
+        headers = curl_slist_append(headers, auth_header);
+
+        curl_easy_setopt(curl, CURLOPT_URL, "https://api.openai.com/v1/images/edits"); // or /variations
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json);
+
+        CURLcode res = curl_easy_perform(curl);
+        if (res != CURLE_OK) {
+            fprintf(stderr, "Curl error: %s\n", curl_easy_strerror(res));
+        }
+
+        curl_easy_cleanup(curl);
+        curl_slist_free_all(headers);
+    }
+
+    free(json);
+    free(image_data);
+}*/
+
+/*
 void call_dalle(char *image_prompt, t_data *data)
 {
 	
@@ -106,7 +222,7 @@ cleanup:
 	curl_easy_cleanup(curl);
 }
 
-
+*/
 
 void call_chatgpt( char *prompt, t_data *data)
 {
@@ -165,7 +281,7 @@ void call_chatgpt( char *prompt, t_data *data)
 				data->gun_description = strdup(content->valuestring);
 				printf("🔧 GPT reply：%s\n", data->gun_description);
 				// call DALL·E API
-				call_dalle(data->gun_description, data);
+				//call_dalle(data->gun_description, data);
 			} else {
 				printf("❌ Failed to extract content from response.\n");
 			}

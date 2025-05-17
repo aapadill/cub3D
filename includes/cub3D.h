@@ -13,6 +13,8 @@
 #ifndef CUB3D_H
 # define CUB3D_H
 
+
+
 # include <math.h>
 # include <stdlib.h>
 # include <stdio.h>
@@ -59,6 +61,8 @@
 #define VEC_INIT_SIZE 4
 
 #define ENEMY_SPEED  0.005
+
+#define IMAGE_BASE_64 "iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAMAAABlApw1AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAByUExURQAAAJgAAPwAAOwAAPycnPxUVPxcXPz8VKioqHx8fIyMjNDQ0LS0tEhISCwsLJiYmGRkZFRUVHBwcAAAACAgIKhoQPCUXLRwRPywgFQ8HPykcPzEpPzYxMh8THRMKIBQLOiMWNyIVPy4kPycYKBkPP///6i6Sn8AAAABdFJOUwBA5thmAAAAAWJLR0QlwwHJDwAAAAd0SU1FB+kDEQgvDTAkv6gAAAI4SURBVHja7dpbb6pQFEXhejsqgorXem29/P/f2BlW2Nk1lmL6sCBnfA+E0D7MkYDHU317AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgf9LpdLwnEOA94W/ru91uixsIcKLRdtLr9fr9vo4P15uOgAYYDAb/CgqwE13xHkWA96hX2N0vw+FQR60PT0I7EOBK//RqsaaPRqPxeKyjztvUQID3env11O4kSSaTiY46t9fTFryxI6ABtFK3u+7+NE0VoKPOdaUd6wlojCzLQoDOvecQ4D3nReOCdoejeI8iwHtUbdPpVHNns9m0NJ/PdSXPc+9pBHhPeyVAb+AWi4VOdLSA1ryYEuAtBMxKFqDr3tMI8J5WO0C3u3aPSllhuVx6TyPAe1rtgNVqZa+bYbqu6Lher73XEeC97jebzcYC9NIZ3szFAdvt1nsjAd4bK9e/F54G7HY7Agiott/vD4fD8Xg8nU7LyKpwPp+3Je+lBHgv/TlAD8CxoIaPkhZ/Fi6Xi64TQEDF+hBg9Ehcr1dd1E9DAwEEVARoYtwQB9xut/AYeI8lwHvszwF2r79/Z+sJIKBa+M+AbY3XE0BAHeGP6fb3UK3cfBd+oaEfGxPgvd526yRJEvtgb1243+86j3/BGnTRezUB3qufrbdxFpDneZZl9gmfffky/uSvQQ0ENGx9HCAhwB4PEz4/9v8KCwHeAbb44e43cYAdn76YOn+LhQDXgDRN6zwD5uHdXhzg1kDAXwO+AI+nxgq+cWFMAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDI1LTAzLTE3VDA4OjQ3OjA4KzAwOjAwpfXRXAAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyNS0wMy0xN1QwODo0NzowOCswMDowMNSoaeAAAAAodEVYdGRhdGU6dGltZXN0YW1wADIwMjUtMDMtMTdUMDg6NDc6MTMrMDA6MDBNEBxbAAAAJ3RFWHR3ZWJwOm11eC1ibGVuZABBdG9wQmFja2dyb3VuZEFscGhhQmxlbmSzunTVAAAAAElFTkSuQmCC"
 
 //# define DEBUG
 #ifdef DEBUG 
@@ -183,14 +187,11 @@ typedef struct s_data {
 	char			*error_msg;
 	bool 			calling_new_gun;
 	bool			is_gun_ready;
-<<<<<<< HEAD
 	
     double			window_time;
 	double			time_one;
 	double			time_two;
-=======
 	char 			*gun_description;//for api
->>>>>>> 6bf40bf (added dalle)
 }	t_data;
 
 /* 
@@ -253,6 +254,8 @@ void 	draw_sprite_column(t_data *data, int x, double dir_x, double dir_y, double
 void	draw_hud_hands(t_data *data);
 void	shooting_animation(t_data *data);
 void call_chatgpt(char *prompt, t_data *data);
-void call_dalle(char *image_prompt, t_data *data);
+// void call_dalle(char *image_prompt, t_data *data);
+//void	call_dalle_with_base64(const char *prompt, const char *base64_image);
+void	call_dalle_with_reference(const char *prompt_text, const char *image_path);
 
 #endif

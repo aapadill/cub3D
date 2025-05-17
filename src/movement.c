@@ -197,7 +197,7 @@ static void handle_shake(t_data *data)
 	}
 }
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
 static void handle_new_gun(t_data *data)
 {
     static double last_new_gun_time = 0.0;
@@ -213,37 +213,39 @@ static void handle_new_gun(t_data *data)
         data->calling_new_gun = true;
         data->is_gun_ready    = false;
         printf("New gun requested at %.2f!\n", now);
-    }
+//    }
 
-    prev_key2 = key2;
-=======
-// static void	handle_new_gun(t_data *data)
-// {
-// 	if (mlx_is_key_down(data->mlx, MLX_KEY_2))
-// 	{
-// 		printf("New gun coming...\n");
-// 		data->calling_new_gun = true;
-// 		data->is_gun_ready = false;
-// 	}
-// }
+//    prev_key2 = key2;
+//=======
 
-static void handle_new_gun(t_data *data)
-{
-    static bool prev_pressed = false;
-    bool pressed = mlx_is_key_down(data->mlx, MLX_KEY_2);
+//static void handle_new_gun(t_data *data)
+//{
+ //   static bool prev_pressed = false;
+ //   bool pressed = mlx_is_key_down(data->mlx, MLX_KEY_2);
 
     // 當前 frame 按下，而且上一次沒按，才視為「新事件」
-    if (pressed && !prev_pressed)
-    {
-        printf("New gun coming...\n");
+ //   if (pressed && !prev_pressed)
+ //   {
+  //      printf("New gun coming...\n");
 
         // call ChatGPT API
        // call_chatgpt("Please generate a new gun png file with transparent background. 30 pixels", data);
-		call_dalle("Please generate a new gun png file with transparent background. 30 pixels", data);
-        data->is_gun_ready = true;
+		//call_dalle("Create a single, first-person view, pixel art image PNG with transparent background of hands holding a stylized flower as a weapon in an idle pose, hands holding the flower from the bottom-center, pointing forward, as you'd see a weapon in Wolfenstein 3D. The style should be low-resolution, 8-bit/16-bit, inspired by 90s FPS games like Doom/Wolfenstein 3D. This image is the first frame of a potential animation sequence.", data);
+        // //const char *prompt =
+        //     "From the reference image, create a single, first-person view, pixel art image PNG with transparent background "
+        //     "of hands holding a stylized flower as a weapon in an idle pose, hands holding the flower "
+        //     "from the bottom-center, pointing forward, as you'd see a weapon in Wolfenstein 3D. "
+        //     "The style should be low-resolution, 8-bit/16-bit, inspired by 90s FPS games like Doom/Wolfenstein 3D.";
+
+		const char *prompt = "Using the reference image as a stylistic and compositional guide, generate a single-frame pixel art image in PNG format with a transparent background. The scene should depict a first-person view of two hands (from the bottom center of the frame) holding a stylized, fictional pillow as a weapon in an idle pose. The flower should be pointed forward, as in a classic FPS game."
+		"The style must closely mimic the low-resolution, 8-bit/16-bit aesthetic of early 90s shooter games such as Doom or Wolfenstein 3D — blocky pixels, reduced color palette, and minimal shading. The image should follow the same centered composition and perspective as the reference, with the pillow replacing the gun but retaining the same weapon-holding pose."
+		"The background must be fully transparent. Keep the dimensions similar to the reference (square, centered), and do not include any UI or game elements.";
+		call_dalle_with_reference(prompt, "./textures/hand/hand4.png");
+		data->is_gun_ready = true;
     }
-    prev_pressed = pressed;
->>>>>>> 6bf40bf (added dalle)
+//    prev_pressed = pressed;
+    prev_key2 = key2;
+//>>>>>>> 6bf40bf (added dalle)
 }
 
 
