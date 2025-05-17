@@ -183,10 +183,14 @@ typedef struct s_data {
 	char			*error_msg;
 	bool 			calling_new_gun;
 	bool			is_gun_ready;
+<<<<<<< HEAD
 	
     double			window_time;
 	double			time_one;
 	double			time_two;
+=======
+	char 			*gun_description;//for api
+>>>>>>> 6bf40bf (added dalle)
 }	t_data;
 
 /* 
@@ -248,5 +252,7 @@ void	error_exit(char *msg);
 void 	draw_sprite_column(t_data *data, int x, double dir_x, double dir_y, double plane_x, double plane_y);
 void	draw_hud_hands(t_data *data);
 void	shooting_animation(t_data *data);
+void call_chatgpt(char *prompt, t_data *data);
+void call_dalle(char *image_prompt, t_data *data);
 
 #endif

@@ -197,6 +197,7 @@ static void handle_shake(t_data *data)
 	}
 }
 
+<<<<<<< HEAD
 static void handle_new_gun(t_data *data)
 {
     static double last_new_gun_time = 0.0;
@@ -215,7 +216,37 @@ static void handle_new_gun(t_data *data)
     }
 
     prev_key2 = key2;
+=======
+// static void	handle_new_gun(t_data *data)
+// {
+// 	if (mlx_is_key_down(data->mlx, MLX_KEY_2))
+// 	{
+// 		printf("New gun coming...\n");
+// 		data->calling_new_gun = true;
+// 		data->is_gun_ready = false;
+// 	}
+// }
+
+static void handle_new_gun(t_data *data)
+{
+    static bool prev_pressed = false;
+    bool pressed = mlx_is_key_down(data->mlx, MLX_KEY_2);
+
+    // 當前 frame 按下，而且上一次沒按，才視為「新事件」
+    if (pressed && !prev_pressed)
+    {
+        printf("New gun coming...\n");
+
+        // call ChatGPT API
+       // call_chatgpt("Please generate a new gun png file with transparent background. 30 pixels", data);
+		call_dalle("Please generate a new gun png file with transparent background. 30 pixels", data);
+        data->is_gun_ready = true;
+    }
+    prev_pressed = pressed;
+>>>>>>> 6bf40bf (added dalle)
 }
+
+
 
 static void	handle_shooting(t_data *data)
 {

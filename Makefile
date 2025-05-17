@@ -1,8 +1,28 @@
 NAME = cub3D
 
 CC = cc
-CFLAGS =  -Wall -Werror -Wextra -g -O2 #-fsanitize=address #-fPIE 
-LDFLAGS = -lglfw -pthread -lm -L./MLX42/include/MLX42 -L./includes -L"/opt/homebrew/Cellar/glfw/3.4/lib/" #-ldl #-pie -lft 
+# CFLAGS =  -Wall -Werror -Wextra -g -O2 #-fsanitize=address #-fPIE 
+# LDFLAGS = -lglfw -pthread -lm -L./MLX42/include/MLX42 -L./includes -L"/opt/homebrew/Cellar/glfw/3.4/lib/" #-ldl #-pie -lft 
+
+
+
+CFLAGS = -Wall  -Wextra -g -O2 \
+	-I/opt/homebrew/include \
+	-I/opt/homebrew/opt/curl/include \
+	-I./includes \
+	-I./MLX42/include/MLX42
+
+
+LDFLAGS = \
+	-lglfw -pthread -lm -lcurl -lcjson \
+	-L/opt/homebrew/lib \
+	-L/opt/homebrew/opt/curl/lib \
+	-L"./MLX42/include/MLX42" \
+	-L"./includes" \
+	-L"/opt/homebrew/Cellar/glfw/3.4/lib/"
+
+LIBMLX = ./MLX42
+
 
 LIBMLX = ./MLX42
 MLX_42 = $(LIBMLX)/build/libmlx42.a
@@ -22,7 +42,8 @@ src/minimap.c \
 src/movement.c \
 src/sprites.c \
 src/hands.c \
-src/free.c
+src/free.c \
+src/api.c
 
 OBJ = $(SRC:.c=.o)
 
