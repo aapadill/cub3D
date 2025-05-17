@@ -1,18 +1,15 @@
+# Name of the executable
 NAME = cub3D
 
+# Compiler and flags
 CC = cc
-# CFLAGS =  -Wall -Werror -Wextra -g -O2 #-fsanitize=address #-fPIE 
-# LDFLAGS = -lglfw -pthread -lm -L./MLX42/include/MLX42 -L./includes -L"/opt/homebrew/Cellar/glfw/3.4/lib/" #-ldl #-pie -lft 
-
-
-
-CFLAGS = -Wall  -Wextra -g -O2 -fsanitize=address \
+CFLAGS = -Wall -Wextra -g -O2 \
 	-I/opt/homebrew/include \
 	-I/opt/homebrew/opt/curl/include \
 	-I./includes \
 	-I./MLX42/include/MLX42
 
-
+# Linker flags
 LDFLAGS = \
 	-L/opt/homebrew/lib \
 	-lglfw -pthread -lm -lcurl -lcjson \
@@ -20,78 +17,97 @@ LDFLAGS = \
 	-L"./includes" \
 	-L"/opt/homebrew/Cellar/glfw/3.4/lib/"
 
-LIBMLX = ./MLX42
-
-
+# Libraries
 LIBMLX = ./MLX42
 MLX_42 = $(LIBMLX)/build/libmlx42.a
 
+# Include paths
 INCLUDES = -Iincludes -I$(LIBMLX)/include
 
+# Source files
 SRC = \
-src/parsing.c \
-src/color_utils.c \
-src/main.c \
-src/shading.c \
-src/texture.c \
-src/ray.c \
-src/rays.c \
-src/utils.c \
-src/minimap.c \
-src/movement.c \
-src/sprites.c \
-src/hands.c \
-src/free.c \
-src/api.c
+	src/parsing.c \
+	src/color_utils.c \
+	src/main.c \
+	src/shading.c \
+	src/texture.c \
+	src/ray.c \
+	src/rays.c \
+	src/utils.c \
+	src/minimap.c \
+	src/movement.c \
+	src/sprites.c \
+	src/hands.c \
+	src/free.c \
+	src/api.c
 
 OBJ = $(SRC:.c=.o)
+
+# --- STB Image headers download ---
+STB_DIR := includes
+STB_HEADERS := \
+	$(STB_DIR)/stb_image.h \
+	$(STB_DIR)/stb_image_write.h
+
+$(STB_HEADERS):
+	@mkdir -p $(STB_DIR)
+	@if [ ! -f $(STB_DIR)/stb_image.h ]; then \
+		curl -L https://raw.githubusercontent.com/nothings/stb/master/stb_image.h \
+		-o $(STB_DIR)/stb_image.h; \
+	fi
+	@if [ ! -f $(STB_DIR)/stb_image_write.h ]; then \
+		curl -L https://raw.githubusercontent.com/nothings/stb/master/stb_image_write.h \
+		-o $(STB_DIR)/stb_image_write.h; \
+	fi
+
+# Ensure movement.o waits on STB headers
+src/movement.o: $(STB_HEADERS)
 
 # Rule for building the final executable
 all: $(NAME)
 
-# Compile libft library with -fPIE
+# Compile libft library
 libft/libft.a:
-	#@make CFLAGS="-Wall -Wextra -Werror -fPIE" -C libft
 	make -C ./libft
 	make bonus -C ./libft
 
-# Clone MLX42 if it does not exist
-mlx_clone: 
+# Clone MLX42 if missing
+mlx_clone:
 	@if [ ! -d "$(LIBMLX)" ]; then \
 		echo "Cloning MLX42..."; \
 		git clone https://github.com/codam-coding-college/MLX42.git $(LIBMLX); \
 	fi
 
-# Build the MLX42 library only if it hasn't been built yet
+# Build MLX42 library
 $(MLX_42): mlx_clone
 	@if [ ! -f "$(MLX_42)" ]; then \
 		echo "Building MLX42..."; \
 		cmake $(LIBMLX) -B $(LIBMLX)/build && make -C $(LIBMLX)/build -j4; \
 	fi
 
-# Compile object files from source
+# Compile object files
 %.o: %.c | mlx_clone
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ -c $<
 
-# Compile the project and link it with libft and MLX42
+# Link executable
 $(NAME): $(OBJ) libft/libft.a $(MLX_42)
-	$(CC) $(CFLAGS) $(OBJ) libft/libft.a $(MLX_42) -o $(NAME) $(LDFLAGS)	
+	$(CC) $(CFLAGS) $(OBJ) libft/libft.a $(MLX_42) -o $(NAME) $(LDFLAGS)
 
 # Clean object files
 clean:
 	rm -rf $(OBJ)
 	rm -rf $(LIBMLX)/build
-	@make -C libft clean
-	
-# Full clean (removes executable and object files)
+	make -C libft clean
+
+# Full clean
 fclean: clean
 	rm -f $(NAME)
-	@make fclean -C libft
+	make fclean -C libft
 
-# Rebuild everything
+# Rebuild
 re: fclean all
 
-# Bonus target to compile the bonus version without relinking
+# Bonus
 bonus: $(NAME)
 
 .PHONY: all clean fclean re bonus mlx_clone

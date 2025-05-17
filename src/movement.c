@@ -12,6 +12,15 @@
 
 #include "cub3D.h"
 #include <limits.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <time.h>
+#include <pthread.h>
+// include this at the top of your .c file (before any other includes)
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 //try to load *all* frames into the aux array.
 //if a frame isn’t yet on disk, we wait a bit and try again next frame
@@ -197,70 +206,104 @@ static void handle_shake(t_data *data)
 	}
 }
 
-// static void handle_new_gun(t_data *data)
-// {
-//     static double last_new_gun_time = 0.0;
-//     static bool   prev_key2 = false;
+static void *ai_worker(void *arg)
+{
+    t_data *data = arg;
+    const char *sheet_path  = "./textures/hand/hand_sheet.png";
+    const char *archive_dir = "./textures/hand/ai_gen";
+    struct stat st;
 
-//     bool key2 = mlx_is_key_down(data->mlx, MLX_KEY_2);
-//     double now = mlx_get_time();
+    // 1) Archive old sheet (with timestamp suffix if needed)
+    if (access(sheet_path, F_OK) == 0 &&
+        stat(archive_dir, &st) == 0 && S_ISDIR(st.st_mode))
+    {
+        char base_dest[PATH_MAX], dest[PATH_MAX];
+        snprintf(base_dest, sizeof(base_dest),
+                 "%s/hand_sheet.png", archive_dir);
 
-//     //on key-down edge and cooldown passed:
-//     if (key2 && !prev_key2 && now - last_new_gun_time > 1.5)
-//     {
-//         last_new_gun_time    = now;
-//         data->calling_new_gun = true;
-//         data->is_gun_ready    = false;
-//         printf("New gun requested at %.2f!\n", now);
+        if (access(base_dest, F_OK) == 0) {
+            time_t t = time(NULL);
+            snprintf(dest, sizeof(dest),
+                     "%s/hand_sheet_%ld.png", archive_dir, (long)t);
+        } else {
+            strcpy(dest, base_dest);
+        }
 
-// 		//do this from image1 to image5
-// 		//const char *prompt = "pixel art, retro first-person view of a hand holding a white flower, black background, like 1990s video games, use image as reference, imagine there is a sequence of five pictures, generate the number %i";
-// 		//generate_with_gpt_image(prompt, "./textures/reference/refhand.png");
-//     }
-//     prev_key2 = key2;
-// }
+        if (rename(sheet_path, dest) != 0)
+            perror("Failed to archive old hand_sheet");
+        else
+            printf("Archived old sheet to %s\n", dest);
+    }
+
+    // 2) Ask OpenAI for a fresh 1024×1024 2×2 sheet
+    const char *prompt =
+        "generate sprite sheet (shooting sequence) of 4 frames: pixel art, retro first-person view of a hand holding a cat, background is black, no transparency, 1990s video game style. The whole sequence will be compressed in a single sheet of 4 frames on a 2 x 2 grid. 1024x1024. there's movement in the shooting because of recoil";
+    generate_with_gpt_image(prompt, sheet_path);
+
+    // 3) Load it and slice into four 512×512 files
+    int w, h, comp;
+    unsigned char *pixels = stbi_load(sheet_path, &w, &h, &comp, 4);
+    if (!pixels) {
+        fprintf(stderr, "Failed to load sheet `%s`\n", sheet_path);
+    }
+    else if (w != 1024 || h != 1024) {
+        fprintf(stderr,
+                "Unexpected sheet size %dx%d (need 1024x1024)\n", w, h);
+        stbi_image_free(pixels);
+    }
+    else {
+        const int cols    = 2, rows = 2;
+        const int slice_w = w  / cols;   // 512
+        const int slice_h = h  / rows;   // 512
+
+        for (int row = 0; row < rows; ++row) {
+            for (int col = 0; col < cols; ++col) {
+                int idx = row * cols + col;  // 0..3
+                unsigned char *slice = malloc(slice_w * slice_h * 4);
+                if (!slice) continue;
+
+                for (int yy = 0; yy < slice_h; ++yy) {
+                    memcpy(
+                        slice + yy * slice_w * 4,
+                        pixels + ((row * slice_h + yy) * w + (col * slice_w)) * 4,
+                        slice_w * 4
+                    );
+                }
+
+                char outpath[PATH_MAX];
+                snprintf(outpath, sizeof(outpath),
+                         "./textures/hand/handx%d.png", idx + 1);
+                stbi_write_png(outpath, slice_w, slice_h,
+                               4, slice, slice_w * 4);
+                free(slice);
+            }
+        }
+        stbi_image_free(pixels);
+    }
+    // 4) Tell main loop we’re done
+    data->is_gun_ready    = true;
+    // data->calling_new_gun = false;
+    return NULL;
+}
 
 static void handle_new_gun(t_data *data)
 {
-    static double last_new_gun_time = 0.0;
-    static bool   prev_key2 = false;
+    static double last_time = 0.0;
+    bool           key2     = mlx_is_key_down(data->mlx, MLX_KEY_2);
+    double         now      = mlx_get_time();
 
-    bool key2 = mlx_is_key_down(data->mlx, MLX_KEY_2);
-    double now = mlx_get_time();
-
-    // on key-down edge and cooldown passed:
-    if (key2 && !prev_key2 && now - last_new_gun_time > 1.5)
+    if (key2 && now - last_time > 1.5 && !data->calling_new_gun)
     {
-        last_new_gun_time    = now;
+        last_time             = now;
         data->calling_new_gun = true;
         data->is_gun_ready    = false;
-        printf("New gun requested at %.2f!\n", now);
+        printf("Spawning AI worker at %.2f\n", now);
 
-		// const char* ref = "./textures/reference/refhand.png"
-        char prompt_buf[512];
-        char outpath[256];
-        for (int i = 1; i <= 5; ++i)
-		{
-            // build the prompt, injecting the frame number
-            snprintf(prompt_buf, sizeof(prompt_buf),
-                "pixel art, retro first-person view of a hand holding a white flower, "
-                "black background (RGB 0,0,0), like 1990s video games"
-                "imagine there is a sequence of five pictures, generate the number %d",
-                i);
-
-            // build the output filename
-            snprintf(outpath, sizeof(outpath),
-                "./textures/hand/handx%d.png",
-                i);
-
-            // call your image-gen routine
-            generate_with_gpt_image(prompt_buf, outpath);
-        }
-        // all done!
+        pthread_t tid;
+        pthread_create(&tid, NULL, ai_worker, data);
+        pthread_detach(tid);
     }
-    prev_key2 = key2;
 }
-
 
 static void	handle_shooting(t_data *data)
 {
@@ -269,7 +312,7 @@ static void	handle_shooting(t_data *data)
 	if (mlx_is_mouse_down(data->mlx, MLX_MOUSE_BUTTON_LEFT))
 		data->is_player_shooting = true;
 }
-
+ 
 static void	handle_rotation(t_data *data)
 {
 	if (mlx_is_key_down(data->mlx, MLX_KEY_LEFT))
@@ -386,7 +429,7 @@ void	loop_hook(void *param)
 	t_data	*data;
 	data = (t_data *)param;
 	handle_new_gun(data);
-	if (data->calling_new_gun && !data->is_gun_ready)
+	if (data->calling_new_gun && data->is_gun_ready)
 		try_load_hands(data);
 	handle_movement(data);
 	handle_shake(data);

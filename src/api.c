@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <cjson/cJSON.h>
 
-#define API_KEY        ""
+#define API_KEY ""
 // #define OUTPUT_PATH    "./textures/hand/generated.png"
 
 // Base64 decoding tables and functions
@@ -97,7 +97,7 @@ int generate_with_gpt_image(const char *prompt, const char *save_path) {
           "\"model\": \"gpt-image-1\","  
           "\"prompt\": \"%s\","     
           "\"n\": 1,"                   
-          "\"size\": \"1536x1024\""  //1024x1024
+          "\"size\": \"1024x1024\""  //1024x1024
         "}", prompt
     );
 

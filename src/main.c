@@ -106,17 +106,17 @@ bool	initializer(t_data *data, char *filename, bool strict)
 	data->enemy = gc_alloc(sizeof(mlx_texture_t *) * 3);
 
 	/* ai hands */
-	data->ai_hands = gc_alloc(sizeof(mlx_texture_t *) * 5);
+	data->ai_hands = gc_alloc(sizeof(mlx_texture_t *) * 4);
 
 	/* hands */
-	data->hud_hands = gc_alloc(sizeof(mlx_texture_t *) * 5);
-	ft_memset(data->hud_hands, 0, sizeof(mlx_texture_t *) * 5);
+	data->hud_hands = gc_alloc(sizeof(mlx_texture_t *) * 4);
+	ft_memset(data->hud_hands, 0, sizeof(mlx_texture_t *) * 4);
 	data->hud_hands[0] = mlx_load_png("textures/hand/hand111.png");
 	data->hud_hands[1] = mlx_load_png("textures/hand/hand222.png");
 	data->hud_hands[2] = mlx_load_png("textures/hand/hand333.png");
 	data->hud_hands[3] = mlx_load_png("textures/hand/hand444.png");
-	data->hud_hands[4] = mlx_load_png("textures/hand/hand555.png");
-	data->hud_frame_count = 5;
+	// data->hud_hands[4] = mlx_load_png("textures/hand/hand555.png");
+	data->hud_frame_count = 4;
 	/* hands */
 	if (is_wall(data, data->player.x, data->player.y))
 	{
@@ -170,7 +170,7 @@ int	main(int argc, char **argv)
 	mlx_delete_texture(data.hud_hands[1]);
 	mlx_delete_texture(data.hud_hands[2]);
 	mlx_delete_texture(data.hud_hands[3]);
-	mlx_delete_texture(data.hud_hands[4]);
+	// mlx_delete_texture(data.hud_hands[4]);
 	//gc_free(data.textures);
 	gc_free_all();
 	return (EXIT_SUCCESS);
