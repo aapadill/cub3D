@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: djelacik <djelacik@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: chlee2 <chlee2@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 16:01:21 by djelacik          #+#    #+#             */
-/*   Updated: 2025/02/21 14:55:18 by aapadill         ###   ########.fr       */
+/*   Updated: 2025/05/17 18:38:44 by chlee2           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@
 #define ENEMY_SPEED  0.005
 
 //# define DEBUG
-#ifdef DEBUG 
+#ifdef DEBUG
 # define DBG_PRINT(...) fprintf(stderr, __VA_ARGS__)
 #else
 # define DBG_PRINT(...) ((void)0)
@@ -186,11 +186,15 @@ typedef struct s_data {
 	double			window_time;
 	double			time_one;
 	double			time_two;
-}	t_data;
 
-/* 
 
-					CLEAN PROTOTYPES, SOME OF THIS DONT EVEN EXIST ANYMORE 
+	//rich
+	int close_enough;
+} t_data;
+
+/*
+
+					CLEAN PROTOTYPES, SOME OF THIS DONT EVEN EXIST ANYMORE
 
 */
 

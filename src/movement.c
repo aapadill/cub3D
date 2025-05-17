@@ -3,15 +3,47 @@
 /*                                                        :::      ::::::::   */
 /*   movement.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: djelacik <djelacik@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: chlee2 <chlee2@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 15:40:09 by djelacik          #+#    #+#             */
-/*   Updated: 2025/04/14 10:20:25 by aapadill         ###   ########.fr       */
+/*   Updated: 2025/05/17 19:18:17 by chlee2           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 #include <limits.h>
+#include <string.h>
+
+#define BOX_WIDTH 300
+#define BOX_HEIGHT 100
+#define BOX_X 20
+#define BOX_Y 20
+#define BOX_COLOR 0x222222FF
+#define TEXT_COLOR 0xFFFFFFFF
+
+void draw_message_box(t_data *data, const char *message)
+{
+	int message_len = strlen(message);
+	int char_width = 8;   // Adjust based on your font
+	int char_height = 16; // Adjust based on your font
+
+	// Draw background box
+	for (int y = 0; y < data->height; y++)
+	{
+		for (int x = 0; x < data->width; x++)
+		{
+			mlx_put_pixel(data->image, BOX_X + x, BOX_Y + y, BOX_COLOR);
+		}
+	}
+
+	// Calculate centered position
+	int text_x = BOX_X + (data->width - message_len * char_width) / 3.3	;
+	int text_y = BOX_Y + (data->height - char_height) / 2;
+
+	// Put centered message
+	mlx_put_string(data->mlx, message, text_x, text_y);
+}
+
 
 //try to load *all* frames into the aux array.
 //if a frame isn’t yet on disk, we wait a bit and try again next frame
@@ -96,8 +128,8 @@ static void handle_movement(t_data *data)
 {
 	double orig_x;
 	double orig_y;
-	double new_x;
-	double new_y;
+	double new_x = 0.0;
+	double new_y = 0.0;
 
 	orig_x = data->player.x;
 	orig_y = data->player.y;
@@ -121,10 +153,19 @@ static void handle_movement(t_data *data)
 		new_x = orig_x + sin(data->player.angle) * data->player.speed;
 		new_y = orig_y - cos(data->player.angle) * data->player.speed;
 	}
+	//rich
+	else if (mlx_is_key_down(data->mlx, MLX_KEY_Z) && data->close_enough)
+	{
+		data->is_player_moving = false;
+		draw_message_box(data, "Dear adventurer, your killer weapon is now being forged.");
+		//cancel message when api got the image!!
+		return;
+	}
 	else
 	{
 		data->is_player_moving = false;
 		return; // No forward/backward movement
+
 	}
 
 	// Try moving diagonally first
@@ -187,7 +228,8 @@ static void handle_barrel(t_data *data)
 	double dist = sqrt(dx*dx + dy*dy);
 	if (dist < 2.0 && dist > 0.0001)  // only chase if “close enough” and avoid div0
 	{
-		printf("Barrel is close to player!\n");
+		data->close_enough = 1;
+		// printf("Barrel is clo	se to player!\n");
 	}
 }
 
@@ -256,7 +298,7 @@ static void handle_mouse_rotation(t_data *data)
 	int32_t aux_y = 0;
 	int32_t dx = 0;
 	//int32_t dy = 0;
-	
+
 	// if (!data->flag)
 	// {
 	// 	mlx_set_cursor_mode(data->mlx, MLX_MOUSE_DISABLED);
