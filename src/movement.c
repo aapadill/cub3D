@@ -151,27 +151,44 @@ static void handle_movement(t_data *data)
 	}
 }
 
-static void handle_enemy(t_data *data)
+// static void handle_enemy(t_data *data)
+// {
+//     // assume sprite 0 is the enemy
+//     double *ex = &data->sprites[0].x;
+//     double *ey = &data->sprites[0].y;
+
+//     // vector from enemy to player
+//     double dx = data->player.x - *ex;
+//     double dy = data->player.y - *ey;
+
+//     double dist = sqrt(dx*dx + dy*dy);
+//     if (dist < 2.0 && dist > 0.0001)  // only chase if “close enough” and avoid div0
+//     {
+//         // normalize (dx,dy) and scale by ENEMY_SPEED
+//         double nx = dx / dist;
+//         double ny = dy / dist;
+
+//         // move the enemy
+//         *ex += nx * ENEMY_SPEED;
+//         *ey += ny * ENEMY_SPEED;
+//     }
+// }
+
+static void handle_barrel(t_data *data)
 {
-    // assume sprite 0 is the enemy
-    double *ex = &data->sprites[0].x;
-    double *ey = &data->sprites[0].y;
+	// assume sprite 1 is the barrel
+	double *bx = &data->sprites[0].x;
+	double *by = &data->sprites[0].y;
 
-    // vector from enemy to player
-    double dx = data->player.x - *ex;
-    double dy = data->player.y - *ey;
+	// vector from barrel to player
+	double dx = data->player.x - *bx;
+	double dy = data->player.y - *by;
 
-    double dist = sqrt(dx*dx + dy*dy);
-    if (dist < 2.0 && dist > 0.0001)  // only chase if “close enough” and avoid div0
-    {
-        // normalize (dx,dy) and scale by ENEMY_SPEED
-        double nx = dx / dist;
-        double ny = dy / dist;
-
-        // move the enemy
-        *ex += nx * ENEMY_SPEED;
-        *ey += ny * ENEMY_SPEED;
-    }
+	double dist = sqrt(dx*dx + dy*dy);
+	if (dist < 2.0 && dist > 0.0001)  // only chase if “close enough” and avoid div0
+	{
+		printf("Barrel is close to player!\n");
+	}
 }
 
 static void handle_shake(t_data *data)
@@ -341,6 +358,7 @@ void	loop_hook(void *param)
 	t_data	*data;
 	data = (t_data *)param;
 	handle_new_gun(data);
+	handle_barrel(data);
 	if (data->calling_new_gun && !data->is_gun_ready)
 		try_load_hands(data);
 	handle_movement(data);
@@ -348,7 +366,7 @@ void	loop_hook(void *param)
 	handle_shooting(data);
 	handle_mouse_rotation(data);
 	handle_rotation(data);
-	handle_enemy(data);
+	// handle_enemy(data);
 	render(data);
 	update_doors(data);
 	if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
