@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   movement.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: djelacik <djelacik@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: chlee2 <chlee2@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 15:40:09 by djelacik          #+#    #+#             */
-/*   Updated: 2025/04/14 10:20:25 by aapadill         ###   ########.fr       */
+/*   Updated: 2025/05/17 19:18:17 by chlee2           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,8 @@ static void handle_movement(t_data *data)
 {
 	double orig_x;
 	double orig_y;
-	double new_x;
-	double new_y;
+	double new_x = 0.0;
+	double new_y = 0.0;
 
 	orig_x = data->player.x;
 	orig_y = data->player.y;
@@ -138,10 +138,19 @@ static void handle_movement(t_data *data)
 		new_x = orig_x + sin(data->player.angle) * data->player.speed;
 		new_y = orig_y - cos(data->player.angle) * data->player.speed;
 	}
+	//rich
+	else if (mlx_is_key_down(data->mlx, MLX_KEY_Z) && data->close_enough)
+	{
+		data->is_player_moving = false;
+		draw_message_box(data, "Dear adventurer, your killer weapon is now being forged.");
+		//cancel message when api got the image!!
+		return;
+	}
 	else
 	{
 		data->is_player_moving = false;
 		return; // No forward/backward movement
+
 	}
 
 	// Try moving diagonally first
@@ -201,17 +210,11 @@ static void handle_barrel(t_data *data)
 	double dx = data->player.x - *bx;
 	double dy = data->player.y - *by;
 
-    double dist = sqrt(dx*dx + dy*dy);
-    if (dist < 2.0 && dist > 0.5)  // only chase if “close enough” and avoid div0
-    {
-        // normalize (dx,dy) and scale by ENEMY_SPEED
-        double nx = dx / dist;
-        double ny = dy / dist;
-
-        // move the enemy
-        *ex += nx * ENEMY_SPEED;
-        *ey += ny * ENEMY_SPEED;
-    }
+	double dist = sqrt(dx*dx + dy*dy);
+	if (dist < 2.0 && dist > 0.0001)  // only chase if “close enough” and avoid div0
+	{
+		printf("Barrel is close to player!\n");
+	}
 }
 
 static void handle_shake(t_data *data)
@@ -388,7 +391,7 @@ static void handle_mouse_rotation(t_data *data)
 	int32_t aux_y = 0;
 	int32_t dx = 0;
 	//int32_t dy = 0;
-	
+
 	// if (!data->flag)
 	// {
 	// 	mlx_set_cursor_mode(data->mlx, MLX_MOUSE_DISABLED);

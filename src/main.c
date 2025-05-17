@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: djelacik <djelacik@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: chlee2 <chlee2@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 16:02:56 by djelacik          #+#    #+#             */
-/*   Updated: 2025/01/04 18:56:34 by djelacik         ###   ########.fr       */
+/*   Updated: 2025/05/17 18:38:56 by chlee2           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ bool	initializer(t_data *data, char *filename, bool strict)
 	}
 	ft_memset(data->textures, 0, sizeof(t_textures));
 	//data->textures->door = mlx_load_png("textures/pics/eagle.png"); //check error
-	
+
 	data->num_sprites = 3;
 	data->sprites = gc_alloc(sizeof(t_sprite) * data->num_sprites);
 	data->sprites[0].texture = 0;
@@ -147,7 +147,9 @@ int	main(int argc, char **argv)
 	t_data	data;
 	int		error;
 	bool	strict;
-	
+
+	data.close_enough = 0;
+
 	strict = false;
 	if (argc < 2 || !has_cub_extension(argv[1]) || argc > 3 || (argc == 3 && ft_strncmp(argv[2], "--strict", 9) != 0))
 	{

@@ -1,11 +1,11 @@
 NO ./textures/pics/mossy.png
   EA ./textures/pics/redbrick.png
-WE                    ./textures/pics/greystone.png                                    
+WE                    ./textures/pics/greystone.png
          SO ./textures/pics/mossy.png
 DO          ./textures/pics/eagle.png
 
-F 127             ,                   127                  ,             127              
-               C           127,127   , 127   
+F 127             ,                   127                  ,             127
+               C           127,127   , 127
 
         1111111111111111111111111
         100D000000110000000000001
