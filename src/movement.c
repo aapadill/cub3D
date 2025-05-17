@@ -151,6 +151,29 @@ static void handle_movement(t_data *data)
 	}
 }
 
+static void handle_enemy(t_data *data)
+{
+    // assume sprite 0 is the enemy
+    double *ex = &data->sprites[0].x;
+    double *ey = &data->sprites[0].y;
+
+    // vector from enemy to player
+    double dx = data->player.x - *ex;
+    double dy = data->player.y - *ey;
+
+    double dist = sqrt(dx*dx + dy*dy);
+    if (dist < 2.0 && dist > 0.0001)  // only chase if “close enough” and avoid div0
+    {
+        // normalize (dx,dy) and scale by ENEMY_SPEED
+        double nx = dx / dist;
+        double ny = dy / dist;
+
+        // move the enemy
+        *ex += nx * ENEMY_SPEED;
+        *ey += ny * ENEMY_SPEED;
+    }
+}
+
 static void handle_shake(t_data *data)
 {
 	if (data->is_player_moving)
@@ -325,6 +348,7 @@ void	loop_hook(void *param)
 	handle_shooting(data);
 	handle_mouse_rotation(data);
 	handle_rotation(data);
+	handle_enemy(data);
 	render(data);
 	update_doors(data);
 	if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))

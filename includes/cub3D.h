@@ -58,6 +58,8 @@
 
 #define VEC_INIT_SIZE 4
 
+#define ENEMY_SPEED  0.005
+
 //# define DEBUG
 #ifdef DEBUG 
 # define DBG_PRINT(...) fprintf(stderr, __VA_ARGS__)
@@ -165,6 +167,8 @@ typedef struct s_data {
 	int				num_sprites;
 	double			*zBuffer;
 	mlx_texture_t	**sprite_textures;
+
+	mlx_texture_t **enemy;
 
 	mlx_texture_t **hud_hands;
 	mlx_texture_t **ai_hands;

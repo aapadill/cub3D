@@ -55,6 +55,9 @@ bool	initializer(t_data *data, char *filename, bool strict)
 	}
 	ft_memset(data->textures, 0, sizeof(t_textures));
 	//data->textures->door = mlx_load_png("textures/pics/eagle.png"); //check error
+	data->num_sprites = 3;
+	data->sprites = gc_alloc(sizeof(t_sprite) * data->num_sprites);
+	data->sprites[0].texture = 0;
 	status = parse_cubfile(filename, data);
 	if (status)
 	{
@@ -81,11 +84,11 @@ bool	initializer(t_data *data, char *filename, bool strict)
 		return (EXIT_FAILURE);
 	}
 	/* sprite hardcoded try */
-	data->num_sprites = 3;
-	data->sprites = gc_alloc(sizeof(t_sprite) * data->num_sprites);
-	data->sprites[0].x = 2.5;
-	data->sprites[0].y = 2.5;
-	data->sprites[0].texture = 0;
+	// data->num_sprites = 3;
+	// data->sprites = gc_alloc(sizeof(t_sprite) * data->num_sprites);
+	// data->sprites[0].x = data->player.x - 0.5;
+	// data->sprites[0].y = data->player.y - 0.5;
+	// data->sprites[0].texture = 0;
 	data->sprites[1].x = 5.5;
 	data->sprites[1].y = 5.5;
 	data->sprites[1].texture = 1;
@@ -99,9 +102,14 @@ bool	initializer(t_data *data, char *filename, bool strict)
 	data->sprite_textures[2] = mlx_load_png("textures/pics/barrel.png");
 	/* sprite hardcoded try */
 
+	/* enemy */
+	data->enemy = gc_alloc(sizeof(mlx_texture_t *) * 3);
+
+	/* ai hands */
+	data->ai_hands = gc_alloc(sizeof(mlx_texture_t *) * 5);
+
 	/* hands */
 	data->hud_hands = gc_alloc(sizeof(mlx_texture_t *) * 5);
-	data->ai_hands = gc_alloc(sizeof(mlx_texture_t *) * 5);
 	ft_memset(data->hud_hands, 0, sizeof(mlx_texture_t *) * 5);
 	data->hud_hands[0] = mlx_load_png("textures/hand/hand111.png");
 	data->hud_hands[1] = mlx_load_png("textures/hand/hand222.png");

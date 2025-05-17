@@ -15,7 +15,7 @@
 static bool	valid_character(char c)
 {
 	return (c == '0' || c == '1' || c == 'N' || c == 'S'
-		|| c == 'E' || c == 'W' || c == 'D' || c == ' ');
+		|| c == 'E' || c == 'W' || c == 'D' || c == ' ' || c == 'X');
 }
 
 bool	is_map_line(char *line)
@@ -239,6 +239,12 @@ bool	parse_player_pos(t_data *data)
 				data->doors[data->door_count].state = CLOSED;
 				data->doors[data->door_count].progress = 0;
 				data->door_count++;
+			}
+			else if (data->map.grid[i][j] == 'X')
+			{
+				data->sprites[0].x = j + 0.5;
+				data->sprites[0].y = i + 0.5;
+				data->map.grid[i][j] = '0';
 			}
 			else if (data->map.grid[i][j] == ' ')
 			{
