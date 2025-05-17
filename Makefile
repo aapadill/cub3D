@@ -1,8 +1,8 @@
 NAME = cub3D
 
 CC = cc
-CFLAGS =  -Wall -Werror -Wextra -g -O2 #-fsanitize=address #-fPIE 
-LDFLAGS = -lglfw -pthread -lm -L./MLX42/include/MLX42 -L./includes -L"/opt/homebrew/Cellar/glfw/3.4/lib/" #-ldl #-pie -lft 
+CFLAGS =  -Wall -Werror -Wextra -g -O2 #-fsanitize=address #-fPIE
+LDFLAGS = -lglfw -pthread -lm -L./MLX42/include/MLX42 -L./includes -L"/opt/homebrew/Cellar/glfw/3.4/lib/" #-ldl #-pie -lft
 
 LIBMLX = ./MLX42
 MLX_42 = $(LIBMLX)/build/libmlx42.a
@@ -22,7 +22,8 @@ src/minimap.c \
 src/movement.c \
 src/sprites.c \
 src/hands.c \
-src/free.c
+src/free.c \
+src/entry_screen.c \
 
 OBJ = $(SRC:.c=.o)
 
@@ -36,7 +37,7 @@ libft/libft.a:
 	make bonus -C ./libft
 
 # Clone MLX42 if it does not exist
-mlx_clone: 
+mlx_clone:
 	@if [ ! -d "$(LIBMLX)" ]; then \
 		echo "Cloning MLX42..."; \
 		git clone https://github.com/codam-coding-college/MLX42.git $(LIBMLX); \
@@ -55,14 +56,14 @@ $(MLX_42): mlx_clone
 
 # Compile the project and link it with libft and MLX42
 $(NAME): $(OBJ) libft/libft.a $(MLX_42)
-	$(CC) $(CFLAGS) $(OBJ) libft/libft.a $(MLX_42) -o $(NAME) $(LDFLAGS)	
+	$(CC) $(CFLAGS) $(OBJ) libft/libft.a $(MLX_42) -o $(NAME) $(LDFLAGS)
 
 # Clean object files
 clean:
 	rm -rf $(OBJ)
 	rm -rf $(LIBMLX)/build
 	@make -C libft clean
-	
+
 # Full clean (removes executable and object files)
 fclean: clean
 	rm -f $(NAME)

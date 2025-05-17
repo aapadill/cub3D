@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   movement.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: djelacik <djelacik@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: chlee2 <chlee2@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 15:40:09 by djelacik          #+#    #+#             */
-/*   Updated: 2025/04/14 10:20:25 by aapadill         ###   ########.fr       */
+/*   Updated: 2025/05/18 01:16:35 by chlee2           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,7 +216,7 @@ static void handle_mouse_rotation(t_data *data)
 	int32_t aux_y = 0;
 	int32_t dx = 0;
 	//int32_t dy = 0;
-	
+
 	// if (!data->flag)
 	// {
 	// 	mlx_set_cursor_mode(data->mlx, MLX_MOUSE_DISABLED);
@@ -312,6 +312,21 @@ static void	render(t_data *data)
     // Hud animation
 	shooting_animation(data);
 }
+
+void wrapper(void *param)
+{
+	t_data *data = (t_data *)param;
+
+	if (data->game_state == STATE_MENU)
+	{
+		entry_screen(data);
+	}
+	else if (data->game_state == STATE_PLAYING)
+	{
+		loop_hook(data); // Your existing game logic
+	}
+}
+
 
 void	loop_hook(void *param)
 {

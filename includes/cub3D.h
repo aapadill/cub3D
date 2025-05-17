@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: djelacik <djelacik@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: chlee2 <chlee2@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 16:01:21 by djelacik          #+#    #+#             */
-/*   Updated: 2025/02/21 14:55:18 by aapadill         ###   ########.fr       */
+/*   Updated: 2025/05/18 01:21:57 by chlee2           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,11 +59,19 @@
 #define VEC_INIT_SIZE 4
 
 //# define DEBUG
-#ifdef DEBUG 
+#ifdef DEBUG
 # define DBG_PRINT(...) fprintf(stderr, __VA_ARGS__)
 #else
 # define DBG_PRINT(...) ((void)0)
 #endif
+
+# define MAX_NAME_LEN 20
+
+//rich
+typedef enum e_game_state {
+	STATE_MENU,
+	STATE_PLAYING
+}	t_game_state;
 
 typedef enum e_door_state{
 	CLOSED,
@@ -182,11 +190,22 @@ typedef struct s_data {
 	double			window_time;
 	double			time_one;
 	double			time_two;
+
+	//rich
+	char player_name[20 + 1];
+	int name_length;
+	mlx_image_t *menu_text;
+	mlx_image_t *input_text;
+	int game_state;
+
+	mlx_image_t *bg_img;
+	int frame;
+
 }	t_data;
 
-/* 
+/*
 
-					CLEAN PROTOTYPES, SOME OF THIS DONT EVEN EXIST ANYMORE 
+					CLEAN PROTOTYPES, SOME OF THIS DONT EVEN EXIST ANYMORE
 
 */
 
@@ -243,5 +262,9 @@ void	error_exit(char *msg);
 void 	draw_sprite_column(t_data *data, int x, double dir_x, double dir_y, double plane_x, double plane_y);
 void	draw_hud_hands(t_data *data);
 void	shooting_animation(t_data *data);
+
+//rich
+void	entry_screen(t_data *data);
+void	wrapper(void *param);
 
 #endif

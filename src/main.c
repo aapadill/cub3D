@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: djelacik <djelacik@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: chlee2 <chlee2@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 16:02:56 by djelacik          #+#    #+#             */
-/*   Updated: 2025/01/04 18:56:34 by djelacik         ###   ########.fr       */
+/*   Updated: 2025/05/17 15:03:34 by chlee2           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ bool	initializer(t_data *data, char *filename, bool strict)
 	data->strict = strict;
 	data->player.speed = 0.025;
 	data->mlx = mlx_init(MIN_WIDTH, MIN_HEIGHT, "Cub3D Ray-Casting", true);
+
 	data->window_time = mlx_get_time();
 	if (!data->mlx)
 	{
@@ -67,6 +68,13 @@ bool	initializer(t_data *data, char *filename, bool strict)
 	mlx_get_monitor_size(0, &monitor_width, &monitor_height);
 	data->width = monitor_width * 0.5;
 	data->height = monitor_height * 0.5;
+
+		//rich
+	data->bg_img = mlx_new_image(data->mlx, data->width, data->height);
+	if (!data->bg_img)
+		exit(1);
+	mlx_image_to_window(data->mlx, data->bg_img, 0, 0);
+	data->frame = 0;
 	mlx_set_window_size(data->mlx, data->width, data->height);
 	mlx_set_window_limit(data->mlx, MIN_WIDTH, MIN_HEIGHT, monitor_width, monitor_height);
 	mlx_set_window_pos(data->mlx, (monitor_width - data->width) / 2, (monitor_height - data->height) / 2);
@@ -137,7 +145,7 @@ int	main(int argc, char **argv)
 	t_data	data;
 	int		error;
 	bool	strict;
-	
+
 	strict = false;
 	if (argc < 2 || !has_cub_extension(argv[1]) || argc > 3 || (argc == 3 && ft_strncmp(argv[2], "--strict", 9) != 0))
 	{
@@ -151,7 +159,11 @@ int	main(int argc, char **argv)
 		error_exit(data.error_msg);
 		//return (EXIT_FAILURE);
 	mlx_image_to_window(data.mlx, data.image, 0, 0);
-	mlx_loop_hook(data.mlx, loop_hook, &data);
+
+	data.game_state = STATE_MENU;
+
+	mlx_loop_hook(data.mlx, wrapper, &data);
+
 	mlx_loop(data.mlx);
 	mlx_terminate(data.mlx);
 	free_textures(data.textures);
