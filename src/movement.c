@@ -142,7 +142,7 @@ static void handle_movement(t_data *data)
 	else if (mlx_is_key_down(data->mlx, MLX_KEY_Z) && data->close_enough)
 	{
 		data->is_player_moving = false;
-		draw_message_box(data, "Dear adventurer, your killer weapon is now being forged.");
+		// draw_message_box(data, "Dear adventurer, your killer weapon is now being forged.");
 		//cancel message when api got the image!!
 		return;
 	}

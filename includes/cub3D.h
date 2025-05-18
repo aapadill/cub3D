@@ -213,6 +213,7 @@ typedef struct s_data {
 
 	mlx_image_t *bg_img;
 	int frame;
+	int close_enough;
 }	t_data;
 
 /*
