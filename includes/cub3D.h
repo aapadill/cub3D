@@ -6,7 +6,7 @@
 /*   By: chlee2 <chlee2@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 16:01:21 by djelacik          #+#    #+#             */
-/*   Updated: 2025/05/17 18:38:44 by chlee2           ###   ########.fr       */
+/*   Updated: 2025/05/18 05:22:27 by aapadill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,12 +215,6 @@ typedef struct s_data {
 	int frame;
 	int close_enough;
 }	t_data;
-
-/*
-
-					CLEAN PROTOTYPES, SOME OF THIS DONT EVEN EXIST ANYMORE
-
-*/
 
 //color_utils.c
 uint8_t		get_r(uint32_t rgba);
