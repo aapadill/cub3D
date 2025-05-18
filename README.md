@@ -57,7 +57,7 @@ If you don't have an API key, get one at [https://platform.openai.com/account/ap
 
 ```
 # Clone the repo
-git clone https://github.com/yourusername/cub3d.git
+git clone https://github.com/aapadill/cub3d.git
 cd cub3d
 
 # Build using Make (adjust as needed)
@@ -138,7 +138,7 @@ C 225,30,0       # Ceiling RGB
 | Mouse Drag (Tab)    | Free-look                           |
 | Space / Left Click  | Shoot (trigger hand animation)      |
 | `2`                 | Change weapon (enter object name)   |
-| `Z`                 | Talk to NPC (needs to be close)     |
+| `0`                 | Talk to NPC (needs to be close)     |
 | Esc                 | Quit                                |
 
 ---
