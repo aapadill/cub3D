@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3D.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chlee2 <chlee2@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: djelacik <djelacik@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 16:01:21 by djelacik          #+#    #+#             */
-/*   Updated: 2025/05/18 05:22:27 by aapadill         ###   ########.fr       */
+/*   Updated: 2025/02/21 14:55:18 by aapadill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@
 // #define IMAGE_BASE_64 "iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAMAAABlApw1AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAByUExURQAAAJgAAPwAAOwAAPycnPxUVPxcXPz8VKioqHx8fIyMjNDQ0LS0tEhISCwsLJiYmGRkZFRUVHBwcAAAACAgIKhoQPCUXLRwRPywgFQ8HPykcPzEpPzYxMh8THRMKIBQLOiMWNyIVPy4kPycYKBkPP///6i6Sn8AAAABdFJOUwBA5thmAAAAAWJLR0QlwwHJDwAAAAd0SU1FB+kDEQgvDTAkv6gAAAI4SURBVHja7dpbb6pQFEXhejsqgorXem29/P/f2BlW2Nk1lmL6sCBnfA+E0D7MkYDHU317AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgf9LpdLwnEOA94W/ru91uixsIcKLRdtLr9fr9vo4P15uOgAYYDAb/CgqwE13xHkWA96hX2N0vw+FQR60PT0I7EOBK//RqsaaPRqPxeKyjztvUQID3env11O4kSSaTiY46t9fTFryxI6ABtFK3u+7+NE0VoKPOdaUd6wlojCzLQoDOvecQ4D3nReOCdoejeI8iwHtUbdPpVHNns9m0NJ/PdSXPc+9pBHhPeyVAb+AWi4VOdLSA1ryYEuAtBMxKFqDr3tMI8J5WO0C3u3aPSllhuVx6TyPAe1rtgNVqZa+bYbqu6Lher73XEeC97jebzcYC9NIZ3szFAdvt1nsjAd4bK9e/F54G7HY7Agiott/vD4fD8Xg8nU7LyKpwPp+3Je+lBHgv/TlAD8CxoIaPkhZ/Fi6Xi64TQEDF+hBg9Ehcr1dd1E9DAwEEVARoYtwQB9xut/AYeI8lwHvszwF2r79/Z+sJIKBa+M+AbY3XE0BAHeGP6fb3UK3cfBd+oaEfGxPgvd526yRJEvtgb1243+86j3/BGnTRezUB3qufrbdxFpDneZZl9gmfffky/uSvQQ0ENGx9HCAhwB4PEz4/9v8KCwHeAbb44e43cYAdn76YOn+LhQDXgDRN6zwD5uHdXhzg1kDAXwO+AI+nxgq+cWFMAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDI1LTAzLTE3VDA4OjQ3OjA4KzAwOjAwpfXRXAAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyNS0wMy0xN1QwODo0NzowOCswMDowMNSoaeAAAAAodEVYdGRhdGU6dGltZXN0YW1wADIwMjUtMDMtMTdUMDg6NDc6MTMrMDA6MDBNEBxbAAAAJ3RFWHR3ZWJwOm11eC1ibGVuZABBdG9wQmFja2dyb3VuZEFscGhhQmxlbmSzunTVAAAAAElFTkSuQmCC"
 
 //# define DEBUG
-#ifdef DEBUG
+#ifdef DEBUG 
 # define DBG_PRINT(...) fprintf(stderr, __VA_ARGS__)
 #else
 # define DBG_PRINT(...) ((void)0)
@@ -213,8 +213,13 @@ typedef struct s_data {
 
 	mlx_image_t *bg_img;
 	int frame;
-	int close_enough;
 }	t_data;
+
+/* 
+
+					CLEAN PROTOTYPES, SOME OF THIS DONT EVEN EXIST ANYMORE 
+
+*/
 
 //color_utils.c
 uint8_t		get_r(uint32_t rgba);
