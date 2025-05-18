@@ -248,7 +248,7 @@ void *ai_worker(void *arg)
     //     "generate sprite sheet (shooting sequence) of 4 frames: pixel art, retro first-person view of a hand holding a rat, background is black, no transparency, 1990s video game style. The whole sequence will be compressed in a single sheet of 4 frames on a 2 x 2 grid. 1024x1024. there's movement in the shooting because of recoil";
     // generate_with_gpt_image(prompt, sheet_path);
 	char object_name[MAX_NAME_LEN + 1];
-	if (data->name_length >= 3) {
+	if (data->name_length >= 2) {
 		// use the entered name
 		snprintf(object_name, sizeof(object_name), "%s", data->player_name);
 	} else {
