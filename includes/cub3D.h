@@ -27,6 +27,11 @@
 # include "vec.h"
 # include "gc_alloc.h"
 
+#include <sys/stat.h>
+#include <unistd.h>
+#include <time.h>
+#include <pthread.h>
+
 # include <MLX42/MLX42.h>
 
 #define GRAY_COLOR 0x444444FF
@@ -61,6 +66,7 @@
 #define VEC_INIT_SIZE 4
 
 #define ENEMY_SPEED  0.005
+# define MAX_NAME_LEN 20
 
 #define IMAGE_BASE_64 "iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAMAAABlApw1AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAByUExURQAAAJgAAPwAAOwAAPycnPxUVPxcXPz8VKioqHx8fIyMjNDQ0LS0tEhISCwsLJiYmGRkZFRUVHBwcAAAACAgIKhoQPCUXLRwRPywgFQ8HPykcPzEpPzYxMh8THRMKIBQLOiMWNyIVPy4kPycYKBkPP///6i6Sn8AAAABdFJOUwBA5thmAAAAAWJLR0QlwwHJDwAAAAd0SU1FB+kDEQgvDTAkv6gAAAI4SURBVHja7dpbb6pQFEXhejsqgorXem29/P/f2BlW2Nk1lmL6sCBnfA+E0D7MkYDHU317AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgf9LpdLwnEOA94W/ru91uixsIcKLRdtLr9fr9vo4P15uOgAYYDAb/CgqwE13xHkWA96hX2N0vw+FQR60PT0I7EOBK//RqsaaPRqPxeKyjztvUQID3env11O4kSSaTiY46t9fTFryxI6ABtFK3u+7+NE0VoKPOdaUd6wlojCzLQoDOvecQ4D3nReOCdoejeI8iwHtUbdPpVHNns9m0NJ/PdSXPc+9pBHhPeyVAb+AWi4VOdLSA1ryYEuAtBMxKFqDr3tMI8J5WO0C3u3aPSllhuVx6TyPAe1rtgNVqZa+bYbqu6Lher73XEeC97jebzcYC9NIZ3szFAdvt1nsjAd4bK9e/F54G7HY7Agiott/vD4fD8Xg8nU7LyKpwPp+3Je+lBHgv/TlAD8CxoIaPkhZ/Fi6Xi64TQEDF+hBg9Ehcr1dd1E9DAwEEVARoYtwQB9xut/AYeI8lwHvszwF2r79/Z+sJIKBa+M+AbY3XE0BAHeGP6fb3UK3cfBd+oaEfGxPgvd526yRJEvtgb1243+86j3/BGnTRezUB3qufrbdxFpDneZZl9gmfffky/uSvQQ0ENGx9HCAhwB4PEz4/9v8KCwHeAbb44e43cYAdn76YOn+LhQDXgDRN6zwD5uHdXhzg1kDAXwO+AI+nxgq+cWFMAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDI1LTAzLTE3VDA4OjQ3OjA4KzAwOjAwpfXRXAAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyNS0wMy0xN1QwODo0NzowOCswMDowMNSoaeAAAAAodEVYdGRhdGU6dGltZXN0YW1wADIwMjUtMDMtMTdUMDg6NDc6MTMrMDA6MDBNEBxbAAAAJ3RFWHR3ZWJwOm11eC1ibGVuZABBdG9wQmFja2dyb3VuZEFscGhhQmxlbmSzunTVAAAAAElFTkSuQmCC"
 
@@ -143,6 +149,12 @@ typedef struct s_ray {
 	double			door_progress;
 }	t_ray;
 
+//rich
+typedef enum e_game_state {
+	STATE_MENU,
+	STATE_PLAYING
+}	t_game_state;
+
 typedef struct s_data {
 	bool			resize_pending;
     int				new_width;
@@ -192,6 +204,15 @@ typedef struct s_data {
 	double			time_one;
 	double			time_two;
 	char 			*gun_description;//for api
+
+	char player_name[20 + 1];
+	int name_length;
+	mlx_image_t *menu_text;
+	mlx_image_t *input_text;
+	int game_state;
+
+	mlx_image_t *bg_img;
+	int frame;
 }	t_data;
 
 /* 
@@ -258,5 +279,8 @@ void call_chatgpt(char *prompt, t_data *data);
 //void	call_dalle_with_base64(const char *prompt, const char *base64_image);
 // void	call_dalle_with_reference(const char *prompt_text, const char *image_path);
 int generate_with_gpt_image(const char *prompt, const char *save_path);
+void entry_screen(t_data *data);
+void wrapper(void *param);
+void *ai_worker(void *arg);
 
 #endif

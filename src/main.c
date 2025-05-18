@@ -159,6 +159,7 @@ int	main(int argc, char **argv)
 		error_exit(data.error_msg);
 		//return (EXIT_FAILURE);
 	mlx_image_to_window(data.mlx, data.image, 0, 0);
+	data.game_state = STATE_PLAYING;
 	mlx_loop_hook(data.mlx, loop_hook, &data);
 	mlx_loop(data.mlx);
 	mlx_terminate(data.mlx);

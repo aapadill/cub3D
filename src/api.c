@@ -13,7 +13,7 @@ static const char encoding_table[] =
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
 static unsigned char *decoding_table = NULL;
-static int mod_table[] = {0, 2, 1};
+// static int mod_table[] = {0, 2, 1};
 
 void build_decoding_table() {
     decoding_table = malloc(256);

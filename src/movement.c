@@ -11,16 +11,24 @@
 /* ************************************************************************** */
 
 #include "cub3D.h"
-#include <limits.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <time.h>
-#include <pthread.h>
-// include this at the top of your .c file (before any other includes)
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+
+// void wrapper(void *param)
+// {
+// 	t_data *data = (t_data *)param;
+
+// 	if (data->game_state == STATE_MENU)
+// 	{
+// 		entry_screen(data);
+// 	}
+// 	else if (data->game_state == STATE_PLAYING)
+// 	{
+// 		loop_hook(data);
+// 	}
+// }
 
 //try to load *all* frames into the aux array.
 //if a frame isn’t yet on disk, we wait a bit and try again next frame
@@ -206,7 +214,7 @@ static void handle_shake(t_data *data)
 	}
 }
 
-static void *ai_worker(void *arg)
+void *ai_worker(void *arg)
 {
     t_data *data = arg;
     const char *sheet_path  = "./textures/hand/hand_sheet.png";
@@ -236,9 +244,28 @@ static void *ai_worker(void *arg)
     }
 
     // 2) Ask OpenAI for a fresh 1024×1024 2×2 sheet
-    const char *prompt =
-        "generate sprite sheet (shooting sequence) of 4 frames: pixel art, retro first-person view of a hand holding a cat, background is black, no transparency, 1990s video game style. The whole sequence will be compressed in a single sheet of 4 frames on a 2 x 2 grid. 1024x1024. there's movement in the shooting because of recoil";
-    generate_with_gpt_image(prompt, sheet_path);
+    // const char *prompt =
+    //     "generate sprite sheet (shooting sequence) of 4 frames: pixel art, retro first-person view of a hand holding a rat, background is black, no transparency, 1990s video game style. The whole sequence will be compressed in a single sheet of 4 frames on a 2 x 2 grid. 1024x1024. there's movement in the shooting because of recoil";
+    // generate_with_gpt_image(prompt, sheet_path);
+	char object_name[MAX_NAME_LEN + 1];
+	if (data->name_length >= 3) {
+		// use the entered name
+		snprintf(object_name, sizeof(object_name), "%s", data->player_name);
+	} else {
+		// default fallback
+		strcpy(object_name, "gun");
+	}
+
+	char prompt[1024];
+	snprintf(prompt, sizeof(prompt),
+		"generate sprite sheet (shooting sequence) of 4 frames: "
+		"pixel art, retro first-person view of a hand holding a %s, "
+		"background is black, no transparency, 1990s video game style. "
+		"The whole sequence will be compressed in a single sheet of 4 "
+		"frames on a 2x2 grid. 1024x1024, with visible recoil movement.",
+		object_name
+	);
+	generate_with_gpt_image(prompt, sheet_path);
 
     // 3) Load it and slice into four 512×512 files
     int w, h, comp;
@@ -293,15 +320,26 @@ static void handle_new_gun(t_data *data)
     double         now      = mlx_get_time();
 
     if (key2 && now - last_time > 1.5 && !data->calling_new_gun)
+	// if (key2 && now - last_time > 1.5)
     {
         last_time             = now;
-        data->calling_new_gun = true;
-        data->is_gun_ready    = false;
-        printf("Spawning AI worker at %.2f\n", now);
+        // data->calling_new_gun = true;
+        // data->is_gun_ready    = false;
+		// data->player_name[0] = 0;
+		// data->game_state = STATE_MENU;
+		// if (data->player_name[0] != 0)
+		// {
+		// 	printf("Gun name is %s\n", data->player_name);
+		// 	printf("Spawning AI worker at %.2f\n", now);
 
-        pthread_t tid;
-        pthread_create(&tid, NULL, ai_worker, data);
-        pthread_detach(tid);
+		// 	pthread_t tid;
+		// 	pthread_create(&tid, NULL, ai_worker, data);
+		// 	pthread_detach(tid);
+		// }
+		// pause the main loop and drop into the entry‐screen
+		data->name_length    = 0;
+		data->player_name[0] = '\0';
+		data->game_state     = STATE_MENU;
     }
 }
 
@@ -409,8 +447,28 @@ static void	render(t_data *data)
 		data->camera.x = data->width / 2;
 		data->camera.y = data->height / 2;
 		printf("Render will now happen with %dx%d\n", data->width, data->height);
+		// If we’re in the menu, toss the old text so entry_screen will recalc it
+		// if (data->game_state == STATE_MENU)
+		// {
+		// 	if (data->menu_text)
+		// 	{
+		// 		mlx_delete_image(data->mlx, data->menu_text);
+		// 		data->menu_text = NULL;
+		// 	}
+		// 	if (data->input_text)
+		// 	{
+		// 		mlx_delete_image(data->mlx, data->input_text);
+		// 		data->input_text = NULL;
+		// 	}
+		// }
 		data->resize_pending = false;
 	}
+	if (data->game_state == STATE_MENU)
+    {
+        // Draw your entry UI instead of the 3D scene
+        entry_screen(data);
+        return;
+    }
 	draw_floor_and_ceiling(data);
 	//draw_walls(data);
 	//draw_sprites(data);

@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "cub3D.h"
+#define CHAR_WIDTH 8
+#define CHAR_HEIGHT 16
 
 double	lookup_door_progress(t_data *data, int x, int y)
 {
@@ -138,112 +140,187 @@ void	draw_floor_and_ceiling(t_data *data)
 	}
 }
 
-
-// double	get_wall_x(t_ray *ray)
+// void entry_screen(t_data *data)
 // {
-// 	if (ray->side == 0)
-// 		return (ray->hit_y - floor(ray->hit_y));
-// 	else
-// 		return (ray->hit_x - floor(ray->hit_x));
-// }
-
-// bool	calculate_ray(t_data *data, double angle, t_ray *ray)
-// {
-// 	//ft_memset(ray, 0, sizeof(t_ray));
-// 	//ray->distance = calculate_distance(data, angle, ray);
-// 	ray->side = calculate_hit_side(data, angle, ray);
-// 	ray->wall_x = get_wall_x(ray);
-// 	//assert(ray->wall_x >= 0 && ray->wall_x <= 1);
-	
-// 	return (true);
-// }
-
-// double	calculate_distance(t_data *data, double angle, t_ray *ray)
-// {
-// 	double	ray_x;
-// 	double	ray_y;
-// 	double	distance;
-
-	
-// 	ray_x = data->player.x;
-// 	ray_y = data->player.y;
-// 	while (!is_wall(data, ray_x, ray_y))
+// 	if (data->game_state == STATE_MENU)
 // 	{
-// 		ray_x += cos(angle);//* STEP_SIZE;
-// 		ray_y += sin(angle);//* STEP_SIZE;
+// 		// // Animate background
+// 		// if (data->bg_img)
+// 		// {
+// 		// 	// Clear background to black with slight alpha for "trail" effect (approximation)
+// 		// 	for (int y = 0; y < data->height; y++)
+// 		// 	{
+// 		// 		for (int x = 0; x < data->width; x++)
+// 		// 		{
+// 		// 			// Instead of fading, just clear fully or semi-clear
+// 		// 			// To slow fade effect you might try a darker color but this won't blend
+// 		// 			mlx_put_pixel(data->bg_img, x, y, 0x0A0A0AFF); // very dark gray
+// 		// 		}
+// 		// 	}
+
+// 		// 	// Add bright dots randomly (fireflies)
+// 		// 	for (int i = 0; i < 80; i++)
+// 		// 	{
+// 		// 		int x = (rand() + data->frame * i) % data->width;
+// 		// 		int y = (rand() + data->frame * (i + 1)) % data->height;
+// 		// 		uint32_t color = 0xFFFFFFFF; // White
+// 		// 		mlx_put_pixel(data->bg_img, x, y, color);
+// 		// 	}
+
+// 		// 	data->frame++;
+// 		// }
+
+// 		int win_w = data->mlx->width;
+// 		int win_h = data->mlx->height;
+
+// 		// Draw title once
+// 		if (!data->menu_text)
+// 		{
+// 			const char *title = "What object do you want as a gun?";
+// 			int title_len = ft_strlen(title);
+// 			int title_x = (win_w - title_len * CHAR_WIDTH) / 2;
+// 			int title_y = win_h / 2 - 40; // Adjust vertically above the name input
+// 			data->menu_text = mlx_put_string(data->mlx, title, title_x, title_y);
+// 		}
+
+// 		// Handle key input for name
+// 		for (int key = MLX_KEY_A; key <= MLX_KEY_Z; key++)
+// 		{
+// 			if (mlx_is_key_down(data->mlx, key) && data->name_length < MAX_NAME_LEN)
+// 			{
+// 				char c = 'A' + (key - MLX_KEY_A);
+// 				data->player_name[data->name_length++] = c;
+// 				data->player_name[data->name_length] = '\0';
+// 				usleep(100000); // crude debounce
+// 			}
+// 		}
+// 		// Handle backspace
+// 		if (mlx_is_key_down(data->mlx, MLX_KEY_BACKSPACE) && data->name_length > 0)
+// 		{
+// 			data->name_length--;
+// 			data->player_name[data->name_length] = '\0';
+// 			usleep(100000); // debounce
+// 		}
+
+// 		// Show current input
+// 		if (data->input_text)
+// 			mlx_delete_image(data->mlx, data->input_text);
+
+// 		char buf[64];
+// 		snprintf(buf, sizeof(buf), "Gun: %s", data->player_name);
+// 		int input_len = ft_strlen(buf);
+// 		int input_x = (win_w - input_len * CHAR_WIDTH) / 2;
+// 		int input_y = win_h / 2;
+
+// 		data->input_text = mlx_put_string(data->mlx, buf, input_x, input_y);
+
+// 		// Press ENTER to continue
+// 		if (mlx_is_key_down(data->mlx, MLX_KEY_ENTER) && data->name_length > 0)
+// 		{
+// 			// data->game_state = STATE_PLAYING;
+// 			// mlx_delete_image(data->mlx, data->menu_text);
+// 			// mlx_delete_image(data->mlx, data->input_text);
+// 			// data->menu_text = NULL;
+// 			// data->input_text = NULL;
+
+// 			// Got a name — spawn the AI worker and resume
+// 			printf("Type \"%s\"\n", data->player_name);
+// 			data->calling_new_gun = true;
+// 			data->is_gun_ready    = false;
+// 			pthread_t tid;
+// 			pthread_create(&tid, NULL, ai_worker, data);
+// 			pthread_detach(tid);
+// 			data->game_state = STATE_PLAYING;
+// 			// clean up the menu text
+// 			mlx_delete_image(data->mlx, data->menu_text);
+// 			mlx_delete_image(data->mlx, data->input_text);
+// 			data->menu_text  = NULL;
+// 			data->input_text = NULL;
+// 			// now the regular loop (try_load_hands → etc.) will kick in,
+// 			// watching calling_new_gun/is_gun_ready for when the new
+// 			// textures appear
+// 		}
 // 	}
-// 	ray->hit_x = ray_x;
-// 	ray->hit_y = ray_y;
-// 	distance = sqrt(pow(ray_x - data->player.x, 2) + pow(ray_y - data->player.y, 2));
-// 	//return (distance * cos(angle - data->player.angle));
-// 	return (distance);
 // }
 
-
-// double	calculate_corrected_distance(double distance, double ray_angle, double player_angle)
-// {
-// 	return (distance * cos(ray_angle - player_angle));
-// }
-
-// static void	draw_wall_column(t_data *data, int x, int start_y, int end_y, int color)
-// {
-// 	int	y;
-
-// 	y = start_y;
-// 	while (y <= end_y)
-// 	{
-// 		if (y >= 0 && y < data->height)
-// 			mlx_put_pixel(data->image, x, y, color);
-// 		y++;
-// 	}
-// }
-
-
-//check types
-// static void	calculate_wall_limits(t_data *data, int *start_y, int *end_y, double ray_distance)
-// {
-// 	int wall_height;
-
-// 	wall_height = (int)(data->height / ray_distance);
-// 	//if (wall_height > data->height)
-// 	//	wall_height = data->height;
-// 	*start_y = (data->height / 2) - (wall_height / 2);
-// 	*end_y = (data->height / 2) + (wall_height / 2);
-// 	if (*start_y < 0)
-// 		*start_y = 0;
-// 	if (*end_y >= data->height)
-// 		*end_y = data->height - 1;
-// }
-
-/*
-void	draw_wall_texture(t_data *data, t_ray *ray, int screen_x, int start_y, int end_y)
+void entry_screen(t_data *data)
 {
-	int			y;
-	uint32_t	tex_x;
-	uint32_t	tex_y;
-	uint32_t	color;
-	uint32_t	shaded_color;
+    if (data->game_state != STATE_MENU)
+        return;
 
-	tex_x = ray->wall_x * ray->texture->width;
-	if (tex_x >= ray->texture->width)
-		tex_x = ray->texture->width - 1;
-	if (ray->is_door && ray->texture == data->textures->door)
-	{
-		int offset = (int)(ray->door_progress * ray->texture->width);
-		tex_x = (tex_x + offset) % ray->texture->width;
-	}
-	else if ((ray->side == 0 && ray->dir_x > 0) || (ray->side == 1 && ray->dir_y < 0))
-		tex_x = ray->texture->width - tex_x - 1;
-	y = start_y;
-	while (y <= end_y)
-	{
-		tex_y = (uint32_t)(((y - start_y) / (double)(end_y - start_y)) * ray->texture->height);
-		if (tex_y >= ray->texture->height)
-			tex_y = ray->texture->height - 1;
-		color = get_texture_color(ray->texture, tex_x, tex_y);
-		shaded_color = simple_shading(color, ray->distance);
-		mlx_put_pixel(data->image, screen_x, y, shaded_color);
-		y++;
-	}
+    int win_w = data->mlx->width;
+    int win_h = data->mlx->height;
+
+    // Draw title once
+    if (!data->menu_text)
+    {
+        const char *title = "What object do you want as a gun?";
+        int title_len = ft_strlen(title);
+        int title_x   = (win_w - title_len * CHAR_WIDTH) / 2;
+        int title_y   = win_h / 2 - 40;
+        int box_x     = title_x - 4;
+        int box_y     = title_y - 4;
+        int box_w     = title_len * CHAR_WIDTH + 8;
+        int box_h     = CHAR_HEIGHT + 8;
+
+        // Draw black background box
+        for (int y = box_y; y < box_y + box_h; y++)
+            for (int x = box_x; x < box_x + box_w; x++)
+                mlx_put_pixel(data->image, x, y, BLACK_COLOR);
+
+        data->menu_text = mlx_put_string(data->mlx, title, title_x, title_y);
+    }
+
+    // Handle key input for name
+    for (int key = MLX_KEY_A; key <= MLX_KEY_Z; key++)
+    {
+        if (mlx_is_key_down(data->mlx, key) && data->name_length < MAX_NAME_LEN)
+        {
+            char c = 'A' + (key - MLX_KEY_A);
+            data->player_name[data->name_length++] = c;
+            data->player_name[data->name_length] = '\0';
+            usleep(100000);
+        }
+    }
+    if (mlx_is_key_down(data->mlx, MLX_KEY_BACKSPACE) && data->name_length > 0)
+    {
+        data->name_length--;
+        data->player_name[data->name_length] = '\0';
+        usleep(100000);
+    }
+
+    // Draw input box background
+    char buf[64];
+    snprintf(buf, sizeof(buf), "> %s", data->player_name);
+    int input_len = ft_strlen(buf);
+    int input_x   = (win_w - input_len * CHAR_WIDTH) / 2;
+    int input_y   = win_h / 2;
+    int box_x2    = input_x - 4;
+    int box_y2    = input_y - 4;
+    int box_w2    = input_len * CHAR_WIDTH + 8;
+    int box_h2    = CHAR_HEIGHT + 8;
+
+    for (int y = box_y2; y < box_y2 + box_h2; y++)
+        for (int x = box_x2; x < box_x2 + box_w2; x++)
+            mlx_put_pixel(data->image, x, y, BLACK_COLOR);
+
+    if (data->input_text)
+        mlx_delete_image(data->mlx, data->input_text);
+    data->input_text = mlx_put_string(data->mlx, buf, input_x, input_y);
+
+    // Press ENTER to continue
+    if (mlx_is_key_down(data->mlx, MLX_KEY_ENTER) && data->name_length > 0)
+    {
+        data->calling_new_gun = true;
+        data->is_gun_ready    = false;
+        pthread_t tid;
+        pthread_create(&tid, NULL, ai_worker, data);
+        pthread_detach(tid);
+        data->game_state = STATE_PLAYING;
+
+        mlx_delete_image(data->mlx, data->menu_text);
+        mlx_delete_image(data->mlx, data->input_text);
+        data->menu_text  = NULL;
+        data->input_text = NULL;
+    }
 }
-*/
