@@ -97,7 +97,7 @@ bool	initializer(t_data *data, char *filename, bool strict)
 	data->sprites[2].texture = 2;
 	data->zBuffer = gc_alloc(sizeof(double) * data->width);
 	data->sprite_textures = gc_alloc(sizeof(mlx_texture_t *) * 3);
-	data->sprite_textures[0] = mlx_load_png("textures/pics/pillar.png");
+	data->sprite_textures[0] = mlx_load_png("textures/pics/enemyfinal.png");
 	data->sprite_textures[1] = mlx_load_png("textures/pics/greenlight.png");
 	data->sprite_textures[2] = mlx_load_png("textures/pics/barrel.png");
 	/* sprite hardcoded try */

@@ -179,7 +179,7 @@ static void handle_enemy(t_data *data)
     double dy = data->player.y - *ey;
 
     double dist = sqrt(dx*dx + dy*dy);
-    if (dist < 2.0 && dist > 0.0001)  // only chase if “close enough” and avoid div0
+    if (dist < 2.0 && dist > 0.5)  // only chase if “close enough” and avoid div0
     {
         // normalize (dx,dy) and scale by ENEMY_SPEED
         double nx = dx / dist;
